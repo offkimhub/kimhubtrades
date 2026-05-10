@@ -216,7 +216,15 @@ a { color: var(--green); text-decoration: none; }
 .notif.show { transform: translateY(0); opacity: 1; }
 .notif i { color: var(--green); font-size: 1rem; }
 .notif p { font-size: 0.82rem; color: var(--text); font-family: var(--font-mono); }
-</style>
+</style>.notif p { font-size: 0.82rem; color: var(--text); font-family: var(--font-mono); }
+
+/* Circles Tab Style */
+.circles-tabs { display: flex; gap: 1rem; margin-bottom: 1.5rem; border-bottom: 2px solid var(--border); padding-bottom: 0.5rem; }
+.circles-tab { padding: 0.5rem 1.2rem; background: var(--card2); border: none; color: var(--muted); font-family: var(--font-mono); font-size: 0.8rem; border-radius: 4px; cursor: pointer; transition: all 0.2s; }
+.circles-tab.active { background: var(--green); color: #000; font-weight: 600; }
+
+</style>  ← Line 219
+</head>   ← Line 220
 </head>
 <body>
 
@@ -347,6 +355,8 @@ a { color: var(--green); text-decoration: none; }
       <div class="nav-item" onclick="switchPanel('copy', this)"><i class="fas fa-copy"></i> Copy Trading</div>
       <div class="nav-section">Account</div>
       <div class="nav-item" onclick="switchPanel('charts', this)"><i class="fas fa-chart-candlestick"></i> Charts</div>
+      <div class="nav-item" onclick="switchPanel('manual', this)"><i class="fas fa-hand-pointer"></i> Manual Trader</div>
+    
       <div class="nav-item" onclick="switchPanel('reports', this)"><i class="fas fa-file-alt"></i> Reports</div>
       <div class="nav-item" style="color:#ff6b35;" onclick="logout()"><i class="fas fa-sign-out-alt"></i> Disconnect</div>
       <div class="sidebar-bottom">
@@ -374,7 +384,159 @@ a { color: var(--green); text-decoration: none; }
         </div>
       </div>
 
-      <div class="content">
+      <div class="content"><!-- MANUAL TRADER -->
+<div class="panel" id="panel-manual">
+  <div class="section-header">
+    <div class="section-title">Manual Trader</div>
+    <div class="section-badge">LIVE TRADING</div>
+  </div>
+  
+  <div style="display:grid;grid-template-columns:2fr 1fr;gap:1.5rem;margin-top:1rem;">
+    <!-- LEFT: Analysis Tool -->
+    <div style="background:var(--card);border:1px solid var(--border);border-radius:8px;padding:1.5rem;">
+      <div style="font-family:var(--font-head);font-size:1.1rem;font-weight:600;color:var(--green3);margin-bottom:1rem;">
+        <i class="fas fa-chart-bar"></i> Premium Analysis Tool
+      </div>
+      
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-bottom:1.5rem;">
+        <div>
+          <label style="font-size:0.7rem;color:var(--muted);font-family:var(--font-mono);display:block;margin-bottom:0.4rem;">SYMBOL</label>
+          <select id="trade-symbol" onchange="updateTradeSymbol()" style="width:100%;background:var(--card2);border:1px solid var(--border2);color:var(--text);font-family:var(--font-mono);font-size:0.85rem;padding:0.6rem;border-radius:4px;">
+            <option value="R_10">Volatility 10</option>
+            <option value="R_25">Volatility 25</option>
+            <option value="R_50">Volatility 50</option>
+            <option value="R_75" selected>Volatility 75</option>
+            <option value="R_100">Volatility 100</option>
+            <option value="frxEURUSD">EUR/USD</option>
+            <option value="frxGBPUSD">GBP/USD</option>
+            <option value="frxXAUUSD">Gold/USD</option>
+          </select>
+        </div>
+        <div>
+          <label style="font-size:0.7rem;color:var(--muted);font-family:var(--font-mono);display:block;margin-bottom:0.4rem;">TRADE TYPE</label>
+          <select id="trade-type" onchange="updateTradeType()" style="width:100%;background:var(--card2);border:1px solid var(--border2);color:var(--text);font-family:var(--font-mono);font-size:0.85rem;padding:0.6rem;border-radius:4px;">
+            <option value="RISE">Rise/Fall</option>
+            <option value="DIGIT_EVEN">Even/Odd</option>
+            <option value="DIGIT_OVER">Over/Under</option>
+            <option value="DIGIT_MATCH">Match/Differs</option>
+          </select>
+        </div>
+      </div>
+      
+      <!-- DIGIT ANALYSIS (CIRCLES) -->
+      <div id="digit-analysis" style="margin-bottom:1.5rem;">
+        <!-- Circles Tab Navigation -->
+<div class="circles-tabs">
+  <button class="circles-tab active" data-tab="last-digit">Last Digit</button>
+  <button class="circles-tab" data-tab="digit-analysis">Digit Analysis</button>
+  <button class="circles-tab" data-tab="patterns">Patterns</button>
+</div>
+        <div style="font-size:0.7rem;color:var(--muted);font-family:var(--font-mono);margin-bottom:0.8rem;">LAST DIGITS ANALYSIS</div>
+        <div style="display:flex;gap:0.5rem;flex-wrap:wrap;margin-bottom:1rem;" id="digit-circles">
+          <!-- Circles will be injected here by JS -->
+        </div>
+        <div style="display:grid;grid-template-columns:repeat(5,1fr);gap:0.5rem;margin-top:1rem;">
+          <div style="text-align:center;background:var(--card2);padding:0.6rem;border-radius:4px;">
+            <div style="font-size:0.6rem;color:var(--muted);font-family:var(--font-mono);">OVER</div>
+            <div style="font-family:var(--font-mono);font-size:0.9rem;color:var(--green);" id="over-pct">—</div>
+          </div>
+          <div style="text-align:center;background:var(--card2);padding:0.6rem;border-radius:4px;">
+            <div style="font-size:0.6rem;color:var(--muted);font-family:var(--font-mono);">UNDER</div>
+            <div style="font-family:var(--font-mono);font-size:0.9rem;color:var(--red);" id="under-pct">—</div>
+          </div>
+          <div style="text-align:center;background:var(--card2);padding:0.6rem;border-radius:4px;">
+            <div style="font-size:0.6rem;color:var(--muted);font-family:var(--font-mono);">EVEN</div>
+            <div style="font-family:var(--font-mono);font-size:0.9rem;color:var(--green);" id="even-pct">—</div>
+          </div>
+          <div style="text-align:center;background:var(--card2);padding:0.6rem;border-radius:4px;">
+            <div style="font-size:0.6rem;color:var(--muted);font-family:var(--font-mono);">ODD</div>
+            <div style="font-family:var(--font-mono);font-size:0.9rem;color:var(--red);" id="odd-pct">—</div>
+          </div>
+          <div style="text-align:center;background:var(--card2);padding:0.6rem;border-radius:4px;">
+            <div style="font-size:0.6rem;color:var(--muted);font-family:var(--font-mono);">HOT</div>
+            <div style="font-family:var(--font-mono);font-size:0.9rem;color:#ff9800;" id="hot-digit">—</div>
+          </div>
+        </div>
+      </div>
+      
+      <!-- TRADE PARAMETERS -->
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-bottom:1.5rem;">
+        <div>
+          <label style="font-size:0.7rem;color:var(--muted);font-family:var(--font-mono);display:block;margin-bottom:0.4rem;">STAKE (USD)</label>
+          <input type="number" id="trade-stake" value="1" min="0.35" step="1" style="width:100%;background:var(--card2);border:1px solid var(--border2);color:var(--text);font-family:var(--font-mono);font-size:0.9rem;padding:0.6rem;border-radius:4px;">
+        </div>
+        <div id="duration-container">
+          <label style="font-size:0.7rem;color:var(--muted);font-family:var(--font-mono);display:block;margin-bottom:0.4rem;">DURATION</label>
+          <select id="trade-duration" style="width:100%;background:var(--card2);border:1px solid var(--border2);color:var(--text);font-family:var(--font-mono);font-size:0.85rem;padding:0.6rem;border-radius:4px;">
+            <option value="1">1 Tick</option>
+            <option value="5">5 Ticks</option>
+            <option value="10">10 Ticks</option>
+          </select>
+        </div>
+        <div id="prediction-container" style="display:none;">
+          <label style="font-size:0.7rem;color:var(--muted);font-family:var(--font-mono);display:block;margin-bottom:0.4rem;">PREDICTION</label>
+          <input type="number" id="trade-prediction" min="0" max="9" placeholder="0-9" style="width:100%;background:var(--card2);border:1px solid var(--border2);color:var(--text);font-family:var(--font-mono);font-size:0.9rem;padding:0.6rem;border-radius:4px;">
+        </div>
+      </div>
+      
+      <!-- TRADE BUTTONS -->
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;">
+        <button onclick="placeTrade('CALL')" id="btn-call" style="background:var(--green);color:#000;font-family:var(--font-head);font-weight:700;font-size:1rem;border:none;padding:0.8rem;border-radius:4px;cursor:pointer;transition:all 0.2s;">
+          <i class="fas fa-arrow-up"></i> RISE
+        </button>
+        <button onclick="placeTrade('PUT')" id="btn-put" style="background:var(--red);color:#fff;font-family:var(--font-head);font-weight:700;font-size:1rem;border:none;padding:0.8rem;border-radius:4px;cursor:pointer;transition:all 0.2s;">
+          <i class="fas fa-arrow-down"></i> FALL
+        </button>
+      </div>
+      
+      <div style="margin-top:1rem;font-size:0.7rem;color:var(--muted);font-family:var(--font-mono);text-align:center;">
+        <i class="fas fa-info-circle"></i> Analysis based on last 100 ticks
+      </div>
+    </div>
+    
+    <!-- RIGHT: Trade Summary -->
+    <div style="background:var(--card);border:1px solid var(--border);border-radius:8px;padding:1.5rem;height:fit-content;">
+      <div style="font-family:var(--font-head);font-size:1.1rem;font-weight:600;color:var(--green3);margin-bottom:1rem;">
+        <i class="fas fa-clipboard-list"></i> Trade Summary
+      </div>
+      
+      <div style="background:var(--card2);border:1px solid var(--border2);border-radius:6px;padding:1rem;margin-bottom:1rem;">
+        <div style="font-size:0.7rem;color:var(--muted);font-family:var(--font-mono);margin-bottom:0.3rem;">CURRENT PRICE</div>
+        <div style="font-family:var(--font-mono);font-size:1.5rem;font-weight:500;color:var(--text);" id="trade-current-price">—</div>
+      </div>
+      
+      <div style="background:var(--card2);border:1px solid var(--border2);border-radius:6px;padding:1rem;margin-bottom:1rem;">
+        <div style="font-size:0.7rem;color:var(--muted);font-family:var(--font-mono);margin-bottom:0.3rem;">SELECTION</div>
+        <div style="font-family:var(--font-mono);font-size:0.9rem;color:var(--text2);" id="trade-selection">—</div>
+      </div>
+      
+      <div style="background:var(--card2);border:1px solid var(--border2);border-radius:6px;padding:1rem;margin-bottom:1rem;">
+        <div style="font-size:0.7rem;color:var(--muted);font-family:var(--font-mono);margin-bottom:0.3rem;">POTENTIAL PAYOUT</div>
+        <div style="font-family:var(--font-mono);font-size:1.2rem;font-weight:500;color:var(--green);" id="trade-payout">—</div>
+      </div>
+      
+     <div style="text-align:center;margin-top:1.5rem;">
+  <button onclick="startAutoTrade()" id="btn-run" style="width:100%;background:var(--green);color:#000;font-family:var(--font-head);font-weight:700;font-size:1.2rem;border:none;padding:1.2rem;border-radius:4px;cursor:pointer;margin-bottom:0.5rem;animation:pulse 2s infinite;">
+    <i class="fas fa-play"></i> RUN BOT
+  </button>
+  <button onclick="stopAutoTrade()" id="btn-stop" style="width:100%;background:var(--red);color:#fff;font-family:var(--font-head);font-weight:700;font-size:1.2rem;border:none;padding:1.2rem;border-radius:4px;cursor:pointer;display:none;">
+    <i class="fas fa-stop"></i> STOP BOT
+  </button>
+  <div style="font-size:0.7rem;color:var(--muted);font-family:var(--font-mono);margin-top:0.8rem;" id="bot-status">
+    <i class="fas fa-circle" style="color:var(--red);font-size:0.5rem;"></i> Bot stopped
+  </div>
+</div>
+
+<style>
+@keyframes pulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.02); }
+}
+</style>
+      </div>
+    </div>
+  </div>
+</div>
         <!-- OVERVIEW -->
         <div class="panel active" id="panel-overview">
           <div class="overview-grid">
@@ -933,6 +1095,315 @@ function switchPanel(name, el) {
     if (chartWS) { chartWS.close(); chartWS = null; }
   }
 }
-</script>
+</script>// ── MANUAL TRADER & ANALYSIS TOOLS ──
+let lastDigits = [];
+let digitHistory = [];
+let manualTraderWS = null;
+
+function initManualTrader() {
+  // Initialize digit counters
+  for(let i=0; i<10; i++) {
+    lastDigits.push({digit:i,count:0});
+  }
+  buildDigitCircles();
+  
+  // Start tracking ticks
+  if(ws && ws.readyState === 1) {
+    startDigitTracking();
+  }
+}
+
+function startDigitTracking() {
+  const originalOnMessage = ws.onmessage;
+  ws.onmessage = (e) => {
+    const d = JSON.parse(e.data);
+    if(d.tick) {
+      const digit = parseInt(d.tick.quote.toString().slice(-1));
+      updateDigitAnalysis(digit);
+    }
+    if(originalOnMessage) originalOnMessage(e);
+  };
+}
+
+function updateDigitAnalysis(digit) {
+  // Add to history
+  digitHistory.push(digit);
+  if(digitHistory.length > 100) {
+    const oldDigit = digitHistory.shift();
+    lastDigits[oldDigit].count--;
+  }
+  
+  // Update current digit
+  lastDigits[digit].count++;
+  
+  // Rebuild circles
+  buildDigitCircles();
+}
+
+function buildDigitCircles() {
+  const container = document.getElementById('digit-circles');
+  if(!container) return;
+  
+  container.innerHTML = '';
+  lastDigits.forEach(d => {
+    const circle = document.createElement('div');
+    circle.style.cssText = `
+      width:44px;height:44px;border-radius:50%;
+      background:${d.count > 0 ? 'var(--green-dim)' : 'var(--card2)'};
+      border:2px solid ${d.count > 15 ? 'var(--green)' : d.count > 10 ? '#ff9800' : 'var(--border2)'};
+      display:flex;align-items:center;justify-content:center;
+      font-family:var(--font-mono);font-size:0.9rem;font-weight:600;
+      color:${d.count > 0 ? 'var(--green)' : 'var(--muted)'};
+      transition:all 0.3s;
+      cursor:pointer;
+    `;
+    circle.innerHTML = `
+      <div style="text-align:center;">
+        <div>${d.digit}</div>
+        <div style="font-size:0.6rem;">${d.count}</div>
+      </div>
+    `;
+    circle.onclick = () => {
+      document.getElementById('trade-prediction').value = d.digit;
+      showNotif(`Selected digit ${d.digit} (${d.count} times)`);
+    };
+    container.appendChild(circle);
+  });
+  
+  // Calculate percentages
+  const total = digitHistory.length > 0 ? digitHistory.length : 1;
+  const even = digitHistory.filter(d => d%2===0).length;
+  const odd = total - even;
+  const over5 = digitHistory.filter(d => d>5).length;
+  const under5 = total - over5;
+  
+  document.getElementById('even-pct').textContent = ((even/total)*100).toFixed(1) + '%';
+  document.getElementById('odd-pct').textContent = ((odd/total)*100).toFixed(1) + '%';
+  document.getElementById('over-pct').textContent = ((over5/total)*100).toFixed(1) + '%';
+  document.getElementById('under-pct').textContent = ((under5/total)*100).toFixed(1) + '%';
+  
+  // Hot digit
+  const hot = lastDigits.reduce((max,d) => d.count > max.count ? d : max, lastDigits);
+  document.getElementById('hot-digit').textContent = hot.digit + ' (' + hot.count + ')';
+}
+
+function updateTradeSymbol() {
+  const sym = document.getElementById('trade-symbol').value;
+  const price = prices[sym];
+  if(price) {
+    document.getElementById('trade-current-price').textContent = price.price.toFixed(sym.startsWith('fr') ? 5 : 2);
+  }
+  
+  // Update selection display
+  const symbolName = SYMBOLS.find(s => s.sym === sym)?.name || sym;
+  document.getElementById('trade-selection').textContent = symbolName;
+}
+
+function updateTradeType() {
+  const type = document.getElementById('trade-type').value;
+  const durationContainer = document.getElementById('duration-container');
+  const predictionContainer = document.getElementById('prediction-container');
+  
+  if(type === 'DIGIT_MATCH' || type === 'DIGIT_OVER') {
+    predictionContainer.style.display = 'block';
+    if(type === 'DIGIT_OVER') {
+      document.querySelector('#prediction-container label').textContent = 'UNDER NUMBER';
+    } else {
+      document.querySelector('#prediction-container label').textContent = 'PREDICTION';
+    }
+  } else {
+    predictionContainer.style.display = 'none';
+  }
+  
+  if(type === 'RISE') {
+    durationContainer.style.display = 'block';
+  } else {
+    durationContainer.style.display = 'block';
+  }
+}
+
+function placeTrade(type) {
+  if(!isLoggedIn) {
+    showNotif('Please connect your Deriv account first!');
+    loginDeriv();
+    return;
+  }
+  
+  const symbol = document.getElementById('trade-symbol').value;
+  const stake = parseFloat(document.getElementById('trade-stake').value);
+  const tradeType = document.getElementById('trade-type').value;
+  
+  // Validate stake
+  if(stake < 0.35) {
+    showNotif('Minimum stake is $0.35');
+    return;
+  }
+  
+  // Get prediction for digit trades
+  let prediction = null;
+  if(tradeType === 'DIGIT_MATCH' || tradeType === 'DIGIT_OVER') {
+    prediction = parseInt(document.getElementById('trade-prediction').value);
+    if(isNaN(prediction) || prediction < 0 || prediction > 9) {
+      showNotif('Please enter a valid prediction (0-9)');
+      return;
+    }
+  }
+  
+  // Build trade request
+  const duration = document.getElementById('trade-duration').value;
+  const req = {
+    buy: 1,
+    price: stake,
+    parameters: {
+      amount: stake,
+      basis: 'stake',
+      contract_type: tradeType === 'RISE' ? (type === 'CALL' ? 'CALL' : 'PUT') : tradeType,
+      currency: accountData.currency || 'USD',
+      duration: tradeType === 'RISE' ? duration : 1,
+      duration_unit: tradeType === 'RISE' ? 't' : 't',
+      symbol: symbol,
+      ...(prediction !== null && { prediction: prediction })
+    }
+  };
+  
+  // Send trade request
+  if(ws && ws.readyState === 1) {
+    ws.send(JSON.stringify(req));
+    showNotif(`Trade placed! ${type === 'CALL' ? 'CALL' : 'PUT'} on ${symbol}`);
+  } else {
+    showNotif('Connection error. Please reconnect.');
+    connectWS(true);
+  }
+}
+
+// Initialize when dashboard loads
+const originalShowDashboard = showDashboard;
+showDashboard = function() {
+  originalShowDashboard();
+  setTimeout(() => {
+    initManualTrader();
+    updateTradeSymbol();
+  }, 500);
+};
+
+// Override switchPanel to initialize manual trader when needed
+const originalSwitchPanel = switchPanel;
+switchPanel = function(name, el) {
+  originalSwitchPanel(name, el);
+  if(name === 'manual') {
+    setTimeout(() => {
+      initManualTrader();
+      updateTradeSymbol();
+    }, 100);
+  }
+};// ── AUTO TRADE FUNCTIONALITY ──
+let autoTradeInterval = null;
+let isAutoTrading = false;
+let tradeCount = 0;
+let totalProfit = 0;
+
+function startAutoTrade() {
+  if(!isLoggedIn) {
+    showNotif('Please connect your Deriv account first!');
+    loginDeriv();
+    return;
+  }
+  
+  const symbol = document.getElementById('trade-symbol').value;
+  const stake = parseFloat(document.getElementById('trade-stake').value);
+  const tradeType = document.getElementById('trade-type').value;
+  
+  if(stake < 0.35) {
+    showNotif('Minimum stake is $0.35');
+    return;
+  }
+  
+  isAutoTrading = true;
+  tradeCount = 0;
+  totalProfit = 0;
+  
+  // Update UI
+  document.getElementById('btn-run').style.display = 'none';
+  document.getElementById('btn-stop').style.display = 'block';
+  document.getElementById('bot-status').innerHTML = '<i class="fas fa-circle" style="color:var(--green);font-size:0.5rem;animation:pulse 1s infinite;"></i> Bot running...';
+  
+  showNotif('Bot started! Trading automatically...');
+  
+  // Place first trade immediately
+  placeAutoTrade(tradeType);
+  
+  // Set interval for continuous trading (every 3 seconds)
+  autoTradeInterval = setInterval(() => {
+    if(isAutoTrading) {
+      placeAutoTrade(tradeType);
+    }
+  }, 3000);
+}
+
+function stopAutoTrade() {
+  isAutoTrading = false;
+  if(autoTradeInterval) {
+    clearInterval(autoTradeInterval);
+    autoTradeInterval = null;
+  }
+  
+  // Update UI
+  document.getElementById('btn-run').style.display = 'block';
+  document.getElementById('btn-stop').style.display = 'none';
+  document.getElementById('bot-status').innerHTML = '<i class="fas fa-circle" style="color:var(--red);font-size:0.5rem;"></i> Bot stopped';
+  
+  showNotif(`Bot stopped! Total trades: ${tradeCount}, Profit/Loss: $${totalProfit.toFixed(2)}`);
+}
+
+function placeAutoTrade(tradeType) {
+  const symbol = document.getElementById('trade-symbol').value;
+  const stake = parseFloat(document.getElementById('trade-stake').value);
+  const predictionInput = document.getElementById('trade-prediction').value;
+  
+  // Determine trade direction based on analysis
+  let contractType;
+  let prediction = null;
+  
+  if(tradeType === 'RISE') {
+    // Simple strategy: alternate between CALL and PUT
+    contractType = tradeCount % 2 === 0 ? 'CALL' : 'PUT';
+  } else if(tradeType === 'DIGIT_EVEN') {
+    contractType = 'DIGITEVEN';
+  } else if(tradeType === 'DIGIT_OVER') {
+    contractType = 'DIGITOVER';
+    prediction = parseInt(predictionInput);
+  } else if(tradeType === 'DIGIT_MATCH') {
+    contractType = 'MATCH';
+    prediction = parseInt(predictionInput);
+  } else {
+    contractType = 'PUT';
+  }
+  
+  const req = {
+    buy: 1,
+    price: stake,
+    parameters: {
+      amount: stake,
+      basis: 'stake',
+      contract_type: contractType,
+      currency: accountData.currency || 'USD',
+      duration: tradeType === 'RISE' ? 1 : 1,
+      duration_unit: 't',
+      symbol: symbol,
+      ...(prediction !== null && { prediction: prediction })
+    }
+  };
+  
+  if(ws && ws.readyState === 1) {
+    ws.send(JSON.stringify(req));
+    tradeCount++;
+    
+    // Update status
+    document.getElementById('bot-status').innerHTML = `
+      <i class="fas fa-circle" style="color:var(--green);font-size:0.5rem;animation:pulse 1s infinite;"></i> 
+      Bot running... Trades: ${tradeCount}
+    `;
+  }
+}
 </body>
 </html>
