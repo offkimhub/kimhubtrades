@@ -1,6 +1,10 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
+<head><!-- 🟢 FAVICON (Browser Tab Icon) START 🟢 -->
+<link rel="icon" type="image/png" href="logo.png"> 
+<!-- If you don't have a file yet, use this SVG data URI instead: -->
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🤖</text></svg>">
+<!-- 🟢 FAVICON END 🟢 -->
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>KimHub Traders | Trading Hub</title>
@@ -275,7 +279,27 @@ a { color: var(--green); text-decoration: none; }
 <!-- LANDING PAGE -->
 <div id="landing">
   <nav class="nav">
-    <div class="nav-logo"><span class="k">KIM</span><span class="hub">HUB</span><span class="trades">TRADERS</span></div>
+   <!-- 🟢 HEADER LOGO START 🟢 -->
+<div class="brand-logo" style="display: flex; align-items: center; gap: 10px; margin-right: 20px;">
+    <!-- Logo Image (Use your file or the SVG below) -->
+    <img src="logo.png" 
+         onerror="this.style.display='none'" 
+         alt="KimHub Logo" 
+         style="height: 40px; width: auto; object-fit: contain;">
+    
+    <!-- Fallback SVG Logo if image fails -->
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" style="height: 40px; width: 40px; fill: #667eea; display: none;" id="fallback-logo">
+        <path d="M50 10 L90 30 L90 70 L50 90 L10 70 L10 30 Z" fill="none" stroke="#667eea" stroke-width="4"/>
+        <circle cx="50" cy="50" r="15" fill="#667eea"/>
+        <path d="M35 45 L45 55 L65 35" stroke="white" stroke-width="3" fill="none"/>
+    </svg>
+    
+    <!-- Text Name (Optional: Remove if you only want the icon) -->
+    <span style="font-size: 1.5rem; font-weight: bold; color: var(--text);">
+        KimHub <span style="color: #667eea;">AI</span>
+    </span>
+</div>
+<!-- 🟢 HEADER LOGO END 🟢 --> <div class="nav-logo"><span class="k">KIM</span><span class="hub">HUB</span><span class="trades">TRADERS</span></div>
     <div class="nav-links">
       <a href="#">Features</a>
       <a href="#">Bots</a>
@@ -374,6 +398,89 @@ a { color: var(--green); text-decoration: none; }
     <div class="main">
       <div class="topbar">
         <div class="topbar-left" id="page-title">Dashboard</div>
+        <!-- Account Panel - Exact Deriv Style -->
+<div class="deriv-account-panel">
+  <!-- Real/Demo Toggle -->
+  <div class="account-toggle">
+    <button class="toggle-btn demo" id="demoToggle">Demo</button>
+    <button class="toggle-btn real active" id="realToggle">Real</button>
+  </div>
+  
+  <!-- Add Money Button -->
+  <button class="add-money-btn">
+    <span>+</span> Add money
+  </button>
+  
+  <!-- Wallets Section -->
+  <div class="wallets-section">
+    <div class="section-title">Wallets</div>
+    <div class="wallets-grid">
+      <!-- USD Wallet -->
+      <div class="wallet-card">
+        <div class="wallet-icon">
+          <img src="https://flagcdn.com/w40/us.png" alt="USD" />
+        </div>
+        <div class="wallet-balance">
+          <div class="balance-amount" id="usdBalance">0.00</div>
+          <div class="wallet-name">USD Wallet</div>
+        </div>
+      </div>
+      
+      <!-- tUSDT Wallet -->
+      <div class="wallet-card">
+        <div class="wallet-icon">
+          <div class="currency-icon">₮</div>
+        </div>
+        <div class="wallet-balance">
+          <div class="balance-amount" id="usdtBalance">0.00</div>
+          <div class="wallet-name">tUSDT Wallet</div>
+        </div>
+      </div>
+      
+      <!-- More Wallets -->
+      <div class="wallet-card more-wallets">
+        <div class="wallet-icon">
+          <span>›</span>
+        </div>
+        <div class="wallet-name">More Wallets</div>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Trading Accounts Section -->
+  <div class="trading-accounts-section">
+    <div class="section-title">My trading accounts</div>
+    <div class="trading-accounts-grid">
+      <!-- Real Options Account -->
+      <div class="trading-account-card real-account">
+        <div class="account-icon">
+          <div class="icon-grid">
+            <div></div><div></div>
+            <div></div><div></div>
+          </div>
+        </div>
+        <div class="account-details">
+          <div class="account-balance" id="realOptionsBalance">0.05 USD</div>
+          <div class="account-type">Options trading</div>
+        </div>
+      </div>
+      
+      <!-- Demo Options Account -->
+      <div class="trading-account-card demo-account" style="display:none;">
+        <div class="account-icon">
+          <div class="icon-grid">
+            <div></div><div></div>
+            <div></div><div></div>
+          </div>
+        </div>
+        <div class="account-details">
+          <div class="account-balance" id="demoOptionsBalance">0.00 tUSDT</div>
+          <div class="account-type">Options trading</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
         <div class="topbar-right">
           <div class="balance-chip">
             <span class="lbl">BALANCE</span>
@@ -521,13 +628,240 @@ a { color: var(--green); text-decoration: none; }
   </button>
   <button onclick="stopAutoTrade()" id="btn-stop" style="width:100%;background:var(--red);color:#fff;font-family:var(--font-head);font-weight:700;font-size:1.2rem;border:none;padding:1.2rem;border-radius:4px;cursor:pointer;display:none;">
     <i class="fas fa-stop"></i> STOP BOT
-  </button>
+ <input type="file" id="bot-upload" accept=".bot,.xml,.txt" style="display:none;">
+<button onclick="document.getElementById('bot-upload').click()">📂 Upload Bot (Local)</button> </button>
   <div style="font-size:0.7rem;color:var(--muted);font-family:var(--font-mono);margin-top:0.8rem;" id="bot-status">
     <i class="fas fa-circle" style="color:var(--red);font-size:0.5rem;"></i> Bot stopped
   </div>
 </div>
+</style>
+ /* --- Deriv Account Panel Styles --- */
+  .deriv-account-panel {
+    background: #2b2b2b;
+    border-radius: 8px;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    color: #fff;
+    padding: 12px 16px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    min-width: 280px;
+    position: relative;
+    z-index: 1000;
+  }
 
-<style>
+  /* Toggle Buttons */
+  .account-toggle {
+    display: flex;
+    background: #1f1f1f;
+    border-radius: 6px;
+    padding: 4px;
+    gap: 4px;
+    width: fit-content;
+  }
+  .toggle-btn {
+    background: transparent;
+    border: none;
+    color: #808080;
+    padding: 6px 16px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 13px;
+    font-weight: 600;
+    transition: all 0.2s;
+  }
+  .toggle-btn.active {
+    background: #2c2c2c;
+    color: #fff;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+  }
+  .toggle-btn:hover:not(.active) {
+    color: #d0d0d0;
+  }
+
+  /* Add Money Button */
+  .add-money-btn {
+    background: #00e676;
+    color: #000;
+    border: none;
+    border-radius: 6px;
+    padding: 8px 16px;
+    font-weight: 700;
+    font-size: 13px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    width: fit-content;
+    transition: background 0.2s;
+  }
+  .add-money-btn:hover {
+    background: #00c853;
+  }
+  .add-money-btn span {
+    font-size: 16px;
+    font-weight: 900;
+  }
+
+  /* Section Titles */
+  .section-title {
+    font-size: 12px;
+    color: #808080;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 8px;
+  }
+
+  /* Wallets Grid */
+  .wallets-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 8px;
+  }
+  .wallet-card {
+    background: #363636;
+    border-radius: 6px;
+    padding: 10px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    cursor: pointer;
+    transition: background 0.2s;
+  }
+  .wallet-card:hover {
+    background: #404040;
+  }
+  .wallet-icon {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: #2b2b2b;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+  }
+  .wallet-icon img {
+    width: 24px;
+    height: 24px;
+    object-fit: cover;
+  }
+  .currency-icon {
+    font-size: 16px;
+    font-weight: 700;
+    color: #fff;
+  }
+  .wallet-balance {
+    display: flex;
+    flex-direction: column;
+  }
+  .balance-amount {
+    font-size: 13px;
+    font-weight: 700;
+    color: #fff;
+  }
+  .wallet-name {
+    font-size: 11px;
+    color: #808080;
+  }
+  .more-wallets {
+    align-items: center;
+    justify-content: center;
+    background: #2b2b2b;
+    border: 1px dashed #555;
+  }
+  .more-wallets .wallet-icon {
+    background: transparent;
+    width: auto;
+    height: auto;
+  }
+  .more-wallets span {
+    font-size: 20px;
+    color: #808080;
+  }
+  .more-wallets .wallet-name {
+    display: none;
+  }
+
+  /* Trading Accounts Grid */
+  .trading-accounts-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 8px;
+    margin-top: 4px;
+  }
+  .trading-account-card {
+    background: #363636;
+    border-radius: 6px;
+    padding: 12px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    cursor: pointer;
+    transition: background 0.2s;
+    border-left: 3px solid transparent;
+  }
+  .trading-account-card:hover {
+    background: #404040;
+  }
+  .trading-account-card.real-account {
+    border-left-color: #00e676;
+  }
+  .trading-account-card.demo-account {
+    border-left-color: #2979ff;
+  }
+  .account-icon {
+    width: 40px;
+    height: 40px;
+    background: #2b2b2b;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .icon-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 4px;
+  }
+  .icon-grid div {
+    width: 8px;
+    height: 8px;
+    background: #555;
+    border-radius: 2px;
+  }
+  .trading-account-card.real-account .icon-grid div {
+    background: #00e676;
+  }
+  .trading-account-card.demo-account .icon-grid div {
+    background: #2979ff;
+  }
+  .account-details {
+    display: flex;
+    flex-direction: column;
+  }
+  .account-balance {
+    font-size: 14px;
+    font-weight: 700;
+    color: #fff;
+    margin-bottom: 2px;
+  }
+  .account-type {
+    font-size: 11px;
+    color: #808080;
+  }
+
+  /* Responsive adjustments if needed */
+  @media (max-width: 768px) {
+    .deriv-account-panel {
+      position: relative;
+      top: auto;
+      right: auto;
+      margin: 10px 0;
+    }
+  }<style>
 @keyframes pulse {
   0%, 100% { transform: scale(1); }
   50% { transform: scale(1.02); }
@@ -987,8 +1321,147 @@ function showNotif(msg) {
   setTimeout(() => n.classList.remove('show'), 3500);
 }
 </script>
-<script src="https://unpkg.com/lightweight-charts/dist/lightweight-charts.standalone.production.js"></script>
-<script>
+<script src="https://unpkg.com/lightweight-charts/dist/lightweight-charts.standalone.production.js">
+  
+// --- KIM-AI LOGIC START ---
+function toggleKimAI() {
+    const panel = document.getElementById('kim-ai-panel');
+    const btn = document.getElementById('kim-ai-toggle');
+    if (panel.style.display === 'none') {
+        panel.style.display = 'flex';
+        btn.style.transform = 'rotate(360deg)';
+        document.getElementById('kim-ai-input').focus();
+    } else {
+        panel.style.display = 'none';
+        btn.style.transform = 'rotate(0deg)';
+    }
+}
+
+function sendKimMessage() {
+    const input = document.getElementById('kim-ai-input');
+    const messages = document.getElementById('kim-ai-messages');
+    const text = input.value.trim();
+    
+    if (!text) return;
+
+    // Add User Message
+    addMessage(text, 'user');
+    input.value = '';
+
+    // Simulate "Thinking" delay
+    setTimeout(() => {
+        const response = getAIResponse(text);
+        addMessage(response, 'ai');
+    }, 600);
+}
+
+function addMessage(text, sender) {
+    const messages = document.getElementById('kim-ai-messages');
+    const div = document.createElement('div');
+    div.style.padding = '10px';
+    div.style.borderRadius = '8px';
+    div.style.maxWidth = '80%';
+    
+    if (sender === 'user') {
+        div.style.background = '#667eea';
+        div.style.color = 'white';
+        div.style.alignSelf = 'flex-end';
+    } else {
+        div.style.background = '#2a2a2a';
+        div.style.color = '#e0e0e0';
+        div.style.alignSelf = 'flex-start';
+    }
+    
+    div.innerHTML = text;
+    messages.appendChild(div);
+    messages.scrollTop = messages.scrollHeight;
+}
+
+// THE "AI" BRAIN (Rule-Based Logic)
+function getAIResponse(input) {
+    const lower = input.toLowerCase();
+
+    // 1. Check for Balance (if you have a global balance variable, e.g., window.balance)
+    if (lower.includes('balance') || lower.includes('account')) {
+        const bal = window.balance ? window.balance : '0.00';
+        return `💰 Your current balance is <b>${bal}</b>. <br>Would you like me to suggest a trade size?`;
+    }
+
+    // 2. Check for Trend Analysis (Simulated for now)
+    if (lower.includes('trend') || lower.includes('market') || lower.includes('analyze')) {
+        // In a real app, you would fetch real data here
+        const trends = ['Bullish 🟢', 'Bearish 🔴', 'Sideways ➡️'];
+        const randomTrend = trends[Math.floor(Math.random() * trends.length)];
+        return `📊 Market Analysis: <br>The current trend for ${window.currentPair || 'Volatility 75'} appears <b>${randomTrend}</b>. <br>⚠️ *Disclaimer: This is a simulation. Trade responsibly.*`;
+    }
+
+    // 3. Check for Signal Request
+    if (lower.includes('signal') || lower.includes('buy') || lower.includes('sell') || lower.includes('trade')) {
+        const action = Math.random() > 0.5 ? 'BUY (CALL) 🟢' : 'SELL (PUT) 🔴';
+        return `🎯 AI Signal: <br>Based on current indicators, the suggestion is: <b>${action}</b>. <br>Stop Loss: 10 ticks | Take Profit: 20 ticks.`;
+    }
+
+    // 4. Check for Help
+    if (lower.includes('help') || lower.includes('hello')) {
+        return `👋 I am Kim-AI! <br>Try asking me: <br>• "What is the trend?"<br>• "Give me a signal"<br>• "Check my balance"`;
+    }
+
+    return `🤔 I'm not sure about that. Try asking me about the <b>trend</b>, <b>signals</b>, or your <b>balance</b>.`;
+}
+
+// Allow "Enter" key to send
+document.getElementById('kim-ai-input').addEventListener('keypress', function(e) {
+    if (e.key === 'Enter') sendKimMessage();
+});
+// --- KIM-AI LOGIC END ---</script>
+// --- BOT UPLOAD LOGIC START ---
+const fileUploadInput = document.getElementById('bot-file-upload');
+const botStatusDisplay = document.getElementById('bot-status');
+
+if (fileUploadInput) {
+    fileUploadInput.addEventListener('change', function(event) {
+        const file = event.target.files;
+        
+        if (!file) {
+            botStatusDisplay.innerText = "";
+            return;
+        }
+
+        // Check file extension
+        const validTypes = ['.bot', '.xml', '.txt'];
+        const fileExt = '.' + file.name.split('.').pop().toLowerCase();
+        
+        if (!validTypes.includes(fileExt)) {
+            botStatusDisplay.style.color = '#e74c3c';
+            botStatusDisplay.innerText = "Error: Invalid file type. Please upload .bot, .xml, or .txt";
+            return;
+        }
+
+        const reader = new FileReader();
+        
+        reader.onload = function(e) {
+            const botContent = e.target.result;
+            
+            // HERE: You would send 'botContent' to your trading engine
+            // Example: loadBotStrategy(botContent);
+            
+            botStatusDisplay.style.color = '#2ecc71';
+            botStatusDisplay.innerText = `✅ Loaded: ${file.name} (${(botContent.length / 1024).toFixed(2)} KB)`;
+            
+            // Optional: Store in a global variable if you have a strategy runner
+            // window.currentBotXML = botContent;
+            console.log("Bot Content Loaded:", botContent);
+        };
+        
+        reader.onerror = function() {
+            botStatusDisplay.style.color = '#e74c3c';
+            botStatusDisplay.innerText = "Error reading file.";
+        };
+
+        reader.readAsText(file);
+    });
+}
+// --- BOT UPLOAD LOGIC END ---<script>
 // ── CHARTS ──
 let chartInstance = null, candleSeries = null, chartWS = null;
 let chartSym = 'R_75', chartInterval = 60;
@@ -1405,5 +1878,130 @@ function placeAutoTrade(tradeType) {
     `;
   }
 }
-</body>
+// Deriv API Integration for Real Balances
+let currentAccountType = 'real'; // 'real' or 'demo'
+
+// Connect to Deriv API
+const ws = new WebSocket('wss://ws.binaryws.com/websockets/v3?app_id=1089');
+
+ws.onopen = function() {
+  console.log('Connected to Deriv API');
+  // Request balance for real account
+  if (currentAccountType === 'real') {
+    getRealAccountBalances();
+  } else {
+    getDemoAccountBalances();
+  }
+};
+
+// Get Real Account Balances
+function getRealAccountBalances() {
+  ws.send(JSON.stringify({
+    balance: 1,
+    account_type: 'real',
+    subscribe: 1
+  }));
+}
+
+// Get Demo Account Balances
+function getDemoAccountBalances() {
+  ws.send(JSON.stringify({
+    balance: 1,
+    account_type: 'demo',
+    subscribe: 1
+  }));
+}
+
+ws.onmessage = function(msg) {
+  const data = JSON.parse(msg.data);
+  
+  if (data.balance) {
+    // Update balances based on account type
+    if (currentAccountType === 'real') {
+      updateRealBalances(data);
+    } else {
+      updateDemoBalances(data);
+    }
+  }
+};
+
+// Update Real Account Balances
+function updateRealBalances(data) {
+  const balance = data.balance.balance;
+  const currency = data.balance.currency;
+  
+  // Update USD Wallet
+  document.getElementById('usdBalance').textContent = 
+    balance.toLocaleString('en-US', {minimumFractionDigits: 2}) + ' ' + currency;
+  
+  // Update Options Trading Account
+  document.getElementById('realOptionsBalance').textContent = 
+    balance.toLocaleString('en-US', {minimumFractionDigits: 2}) + ' ' + currency;
+}
+
+// Update Demo Account Balances
+function updateDemoBalances(data) {
+  const balance = data.balance.balance;
+  const currency = data.balance.currency;
+  
+  // Update Demo balances
+  document.getElementById('usdBalance').textContent = 
+    balance.toLocaleString('en-US', {minimumFractionDigits: 2}) + ' ' + currency;
+  
+  document.getElementById('demoOptionsBalance').textContent = 
+    balance.toLocaleString('en-US', {minimumFractionDigits: 2}) + ' ' + currency;
+}
+
+// Toggle between Real and Demo accounts
+document.getElementById('realToggle').addEventListener('click', function() {
+  currentAccountType = 'real';
+  document.querySelectorAll('.toggle-btn').forEach(btn => btn.classList.remove('active'));
+  this.classList.add('active');
+  document.querySelector('.demo-account').style.display = 'none';
+  document.querySelector('.real-account').style.display = 'flex';
+  getRealAccountBalances();
+});
+
+document.getElementById('demoToggle').addEventListener('click', function() {
+  currentAccountType = 'demo';
+  document.querySelectorAll('.toggle-btn').forEach(btn => btn.classList.remove('active'));
+  this.classList.add('active');
+  document.querySelector('.real-account').style.display = 'none';
+  document.querySelector('.demo-account').style.display = 'flex';
+  getDemoAccountBalances();
+});<!-- 🟢 KI-TRADER AI ASSISTANT START 🟢 -->
+<div id="kim-ai-container" style="position: fixed; bottom: 20px; right: 20px; z-index: 9999; font-family: var(--font-head);">
+    <!-- Floating Button -->
+    <button id="kim-ai-toggle" onclick="toggleKimAI()" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border: none; width: 60px; height: 60px; border-radius: 50%; box-shadow: 0 4px 15px rgba(0,0,0,0.3); cursor: pointer; font-size: 24px; display: flex; align-items: center; justify-content: center;">
+        🤖
+    </button>
+
+    <!-- Chat Panel (Hidden by default) -->
+    <div id="kim-ai-panel" style="display: none; position: absolute; bottom: 75px; right: 0; width: 350px; height: 500px; background: var(--card); border: 1px solid var(--border); border-radius: 12px; box-shadow: 0 5px 25px rgba(0,0,0,0.5); flex-direction: column; overflow: hidden;">
+        <!-- Header -->
+        <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 15px; font-weight: bold; display: flex; justify-content: space-between; align-items: center;">
+            <span>🤖 Kim-AI Assistant</span>
+            <span onclick="toggleKimAI()" style="cursor: pointer; font-size: 18px;">✕</span>
+        </div>
+        
+        <!-- Chat Messages Area -->
+        <div id="kim-ai-messages" style="flex: 1; padding: 15px; overflow-y: auto; background: #1a1a1a; font-size: 14px; display: flex; flex-direction: column; gap: 10px;">
+            <div style="background: #2a2a2a; padding: 10px; border-radius: 8px; align-self: flex-start; max-width: 80%;">
+                👋 Hi! I'm Kim-AI. I can analyze the market and suggest trades. <br><br>
+                Try asking: <br>
+                • "What is the trend for Volatility 75?"<br>
+                • "Give me a buy signal."<br>
+                • "Check my balance."
+            </div>
+        </div>
+
+        <!-- Input Area -->
+        <div style="padding: 10px; background: var(--card); border-top: 1px solid var(--border); display: flex; gap: 10px;">
+            <input type="text" id="kim-ai-input" placeholder="Ask Kim-AI..." style="flex: 1; padding: 8px; border-radius: 4px; border: 1px solid var(--border); background: #222; color: white;">
+            <button onclick="sendKimMessage()" style="background: #667eea; color: white; border: none; padding: 8px 12px; border-radius: 4px; cursor: pointer;">Send</button>
+        </div>
+    </div>
+</div>
+<!-- 🟢 KI-TRADER AI ASSISTANT END 🟢 -->
+  </body>
 </html>
