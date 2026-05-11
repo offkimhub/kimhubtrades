@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>KimHubTraders | Automated Trading Platform</title>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@300;400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <style>
+    /* ... your (unchanged) CSS remains here ... */
+    /* Only show .main-container after login */
+    .main-container, .risk-banner { display: none; }
+    body.logged-in .main-container, body.logged-in .risk-banner { display: block; }
+    /* ... Keep the rest of your CSS ... */
+  </style>
+</head>
+<body>
+
+<!-- LOADING SCREEN -->
+<div id="loader">
+  <div class="loader-logo">KimHub<span>Traders</span></div>
+  <div class="loader-bar-wrap"><div class="loader-bar" id="loader-bar"></div></div>
+  <div class="loader-status" id="loader-status">Initializing platform...</div>
+</div>
+
+<!-- NOTIFICATION -->
+<div class="notif" id="notif">
+  <i class="fas fa-check-circle"></i>
+  <p id="notif-text">Notification</p>
+</div>
+
+<!-- LOGIN MODAL -->
+<div class="modal-overlay" id="login-modal">
+  <div class="modal-box">
+    <div class="modal-header">
+      <div class="modal-title">Connect Deriv Account</div>
+      <button class="modal-close" onclick="closeLogin()"><i class="fas fa-times"></i></button>
+    </div>
+    <div class="modal-body">
+      <div class="login-help">
+        <b style="color:var(--green);">How to get your token:</b><br>
+        1. Go to <a href="https://app.deriv.com/account/api-token" target="_blank">app.deriv.com/account/api-token</a><br>
+        2. Create a token with <b>Read + Trade</b> scope<br>
+        3. Copy and paste it below
+      </div>
+      <input type="text" class="login-input" id="pat-input" placeholder="Paste your API token here...">
+    </div>
+    <div class="modal-footer">
+      <button class="btn-secondary" onclick="closeLogin()">Cancel</button>
+      <button class="btn-primary" onclick="submitPAT()">Connect Account</button>
+    </div>
+  </div>
+</div>
+
+<!-- ALL MAIN CONTENT (hidden until logged in) -->
+<div class="main-container">
+  <!-- ...[Your unchanged markup, sidebar, main content, etc.]... -->
+  <!-- Only the script at the end is changed, see below -->
+</div>
+
+<!-- RISK DISCLAIMER -->
+<div class="risk-banner">
+  <i class="fas fa-exclamation-triangle"></i> Risk Disclaimer
+</div>
+
+<script>
+/* ========== CONFIG ========== */
+const APP_ID = '33e1QKjIy2RDqA1aSDLeh';
+const WS_URL = 'wss://ws.binaryws.com/websockets/v3?app_id=' + APP_ID;
+
+/* ========== VARS ========== */
+let ws = null, authToken = null, isLoggedIn = false;
+let accountData = { name: 'Trader', balance: 0.05, currency: 'USD', loginid: '', is_virtual: true };
+let allAccounts = [];
+let builderRunning = false, builderInterval = null, builderTimer = 0;
+let builderStats = { totalStake: 0, totalPayout: 0, runs: 0, contractsLost: 0, contractsWon: 0, totalPnL: 0 };
+
+/* ========== LOADING ANIMATION ========== */
+let prog = 0;
+const bar = document.getElementById('loader-bar');
+const loadTimer = setInterval(() => {
+  prog += 3;
+  bar.style.width = prog + '%';
+  if (prog >= 100) {
+    clearInterval(loadTimer);
+    setTimeout(() => {
+      document.getElementById('loader').style.opacity = '0';
+      setTimeout(() => document.getElementById('loader').style.display = 'none', 500);
+    }, 300);
+  }
+}, 50);
+
+/* ========== UI SHOW/HIDE LOGIC ========== */
+function showMainUI(loggedIn) {
+  if (loggedIn) {
+    document.body.classList.add('logged-in');
+  } else {
+    document.body.classList.remove('logged-in');
+  }
+}
+/* ========== NAVIGATION ========== */
+function switchTab(tabName, el) {
+  if (!isLoggedIn && tabName !== 'dashboard') {
+    showLogin();
+    return;
+  }
+  // Update top nav
+  document.querySelectorAll('.top-nav-link').forEach(l => l.classList.remove('active'));
+  if (el && el.classList) el.classList.add('active');
+  else {
+    const links = document.querySelectorAll('.top-nav-link');
+    const map = { 'dashboard': 0, 'bot-builder': 1, 'charts': 2, 'tutorials': 3 };
+    if (map[tabName] !== undefined && links[map[tabName]]) links[map[tabName]].classList.add('active');
+  }
+
+  // Update sidebar
+  document.querySelectorAll('.sidebar-item').forEach(l => l.classList.remove('active'));
+  const sidebarMap = { 'dashboard': 0, 'bot-builder': 1, 'charts': 2, 'tutorials': 3, 'manual': 4, 'live-prices': 5, 'copy-trading': 6, 'reports': 7 };
+  const sidebarItems = document.querySelectorAll('.sidebar-item');
+  if (sidebarMap[tabName] !== undefined && sidebarItems[sidebarMap[tabName]]) sidebarItems[sidebarMap[tabName]].classList.add('active');
+
+  // Show panel
+  document.querySelectorAll('.content-panel').forEach(p => p.classList.remove('active'));
+  document.getElementById('panel-' + tabName).classList.add('active');
+}
+
+/* ========== AUTH ========== */
+function showLogin() {
+  document.getElementById('login-modal').classList.add('show');
+  showMainUI(false); // Hide main UI until logged in
+}
+function closeLogin() {
+  document.getElementById('login-modal').classList.remove('show');
+  if (isLoggedIn) showMainUI(true);
+}
+function submitPAT() {
+  const token = document.getElementById('pat-input').value.trim();
+  if (!token) { showNotif('Please enter your API token'); return; }
+  authWithToken(token);
+}
+function authWithToken(token) {
+  authToken = token;
+  const ws2 = new WebSocket(WS_URL);
+  ws2.onopen = () => ws2.send(JSON.stringify({ authorize: token }));
+  ws2.onmessage = (e) => {
+    const d = JSON.parse(e.data);
+    if (d.authorize) {
+      accountData = {
+        name: d.authorize.fullname || d.authorize.email || 'Trader',
+        balance: d.authorize.balance,
+        currency: d.authorize.currency,
+        loginid: d.authorize.loginid,
+        is_virtual: d.authorize.is_virtual
+      };
+      isLoggedIn = true;
+      closeLogin();
+      updateUI();
+      ws2.send(JSON.stringify({ account_list: 1 }));
+      ws2.send(JSON.stringify({ balance: 1, subscribe: 1 }));
+      showMainUI(true); // <--- Show UI only after login
+    } else if (d.account_list) {
+      allAccounts = d.account_list;
+      buildAccList(allAccounts);
+    } else if (d.balance) {
+      accountData.balance = d.balance.balance;
+      updateUI();
+    } else if (d.error) {
+      showNotif('Invalid token: ' + d.error.message);
+    }
+  };
+}
+function logout() {
+  isLoggedIn = false;
+  authToken = null;
+  accountData = { name: 'Trader', balance: 0.05, currency: 'USD', loginid: '', is_virtual: true };
+  allAccounts = [];
+  updateUI();
+  showNotif('Logged out successfully');
+  showLogin(); // <--- Force login modal after logout
+  showMainUI(false); // <--- Hide UI after logout
+}
+function updateUI() {
+  const bal = parseFloat(accountData.balance || 0).toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2});
+  document.getElementById('top-balance').textContent = bal + ' ' + (accountData.currency || 'USD');
+  document.getElementById('user-name').textContent = (accountData.name || 'Trader').split(' ')[0];
+  document.getElementById('user-type').textContent = accountData.is_virtual ? 'DEMO ACCOUNT' : 'REAL ACCOUNT';
+  document.getElementById('acc-badge').textContent = accountData.is_virtual ? 'Demo' : 'Real';
+  document.getElementById('acc-badge').className = 'balance-badge ' + (accountData.is_virtual ? 'demo' : 'real');
+  document.getElementById('user-avatar').textContent = (accountData.name || 'T').substring(0,1).toUpperCase();
+  buildAccList(allAccounts.length > 0 ? allAccounts : [accountData]);
+}
+
+/* ========== ACCOUNT DROPDOWN (unchanged) ========== */
+// ... your account dropdown logic remains the same ...
+
+/* ========== BOT BUILDER (Bold status) ========== */
+function runBuilderBot() {
+  if (!isLoggedIn) { showLogin(); return; }
+  if (builderRunning) return;
+  builderRunning = true;
+  document.getElementById('builder-run-btn').style.display = 'none';
+  document.getElementById('builder-stop-btn').style.display = 'inline-flex';
+  document.getElementById('builder-status').innerHTML = '<b style="color:var(--green);font-size:1.2em;">Bot is running...</b>';
+  showNotif('Bot is now running!');
+
+  builderInterval = setInterval(() => {
+    if (!builderRunning) return;
+    const stake = (0.50 + Math.random() * 2).toFixed(2);
+    const isWin = Math.random() > 0.42;
+    const profit = isWin ? (stake * 0.88).toFixed(2) : (-stake).toFixed(2);
+    builderStats.totalStake += parseFloat(stake);
+    builderStats.totalPnL += parseFloat(profit);
+    builderStats.runs++;
+    if (parseFloat(profit) >= 0) { builderStats.contractsWon++; builderStats.totalPayout += parseFloat(profit) + parseFloat(stake); }
+    else builderStats.contractsLost++;
+    updateBuilderSummary();
+    if (isWin) accountData.balance = parseFloat(accountData.balance) + parseFloat(profit);
+    else accountData.balance = parseFloat(accountData.balance) - parseFloat(stake);
+    updateUI();
+  }, 4000);
+
+  // Timer
+  builderTimer = 0;
+  window.builderTimerInterval = setInterval(() => {
+    if (!builderRunning) return;
+    builderTimer++;
+    const h = String(Math.floor(builderTimer / 3600)).padStart(2, '0');
+    const m = String(Math.floor((builderTimer % 3600) / 60)).padStart(2, '0');
+    const s = String(builderTimer % 60).padStart(2, '0');
+    document.getElementById('builder-timer').textContent = h + ':' + m + ':' + s;
+  }, 1000);
+}
+function stopBuilderBot() {
+  if (!builderRunning) return;
+  builderRunning = false;
+  if (builderInterval) clearInterval(builderInterval);
+  if (window.builderTimerInterval) clearInterval(window.builderTimerInterval);
+  document.getElementById('builder-run-btn').style.display = 'inline-flex';
+  document.getElementById('builder-stop-btn').style.display = 'none';
+  document.getElementById('builder-status').innerHTML = '<span style="color:#888;">Bot is not running</span>';
+  showNotif('Bot stopped.');
+}
+
+/* ========== INIT ========== */
+document.addEventListener('DOMContentLoaded', () => {
+  // --- Always show login if NOT logged in on initial load
+  if (!isLoggedIn) {
+    showLogin();
+    showMainUI(false);
+  } else {
+    updateUI();
+    showMainUI(true);
+  }
+  // ...rest of your handlers for dropdown/click/search...
+  document.addEventListener('click', (e) => {
+    const wrap = document.querySelector('.top-nav-right > div');
+    const dropdown = document.getElementById('acc-dropdown');
+    if (wrap && dropdown && !wrap.contains(e.target)) {
+      dropdown.classList.remove('show');
+    }
+  });
+  const search = document.getElementById('block-search');
+  if (search) {
+    search.addEventListener('input', (e) => {
+      const term = e.target.value.toLowerCase();
+      document.querySelectorAll('.builder-block-item').forEach(item => {
+        item.style.display = item.textContent.toLowerCase().includes(term) ? 'flex' : 'none';
+      });
+    });
+  }
+});
+
+/* ===== ... The rest of your unchanged code ... ===== */
+</script>
+</body>
+</html>
