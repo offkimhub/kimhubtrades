@@ -8,25 +8,25 @@
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 <style>
 :root {
-  --bg: #050d05;
-  --surface: #091509;
-  --card: #0d1f0d;
-  --card2: #112011;
-  --border: #1a3a1a;
-  --border2: #224422;
-  --green: #00e676;
-  --green2: #00c853;
+  --bg: #f5f5f5;
+  --surface: #ffffff;
+  --card: #ffffff;
+  --card2: #f8f9fa;
+  --border: #e0e0e0;
+  --border2: #d0d0d0;
+  --green: #00c853;
+  --green2: #00b248;
   --green3: #69f0ae;
-  --green-dim: #004d20;
+  --green-dim: #e8f5e9;
   --red: #ff5252;
-  --red-dim: #4d0000;
+  --red-dim: #ffebee;
   --orange: #ff9800;
-  --orange-dim: #3d2a00;
+  --orange-dim: #fff3e0;
   --blue: #2196f3;
-  --blue-dim: #0d2a4a;
-  --text: #c8e6c9;
-  --text2: #81c784;
-  --muted: #4a7a4a;
+  --blue-dim: #e3f2fd;
+  --text: #333333;
+  --text2: #555555;
+  --muted: #888888;
   --font-head: 'Rajdhani', sans-serif;
   --font-body: 'Exo 2', sans-serif;
   --font-mono: 'DM Mono', monospace;
@@ -579,6 +579,198 @@ a { color: var(--green); text-decoration: none; }
   font-size: 0.7rem;
 }
 
+/* ═══════ DBTRADERS-STYLE BOT TABS ═══════ */
+.dbot-tabs {
+  display: flex;
+  border-bottom: 1px solid var(--border);
+  background: var(--card2);
+}
+.dbot-tab {
+  flex: 1;
+  text-align: center;
+  padding: 0.7rem 0.5rem;
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  color: var(--muted);
+  cursor: pointer;
+  transition: all 0.15s;
+  border-bottom: 2px solid transparent;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+}
+.dbot-tab:hover {
+  color: var(--text2);
+  background: var(--card);
+}
+.dbot-tab.active {
+  color: var(--green);
+  border-bottom-color: var(--green);
+  background: var(--card);
+  font-weight: 600;
+}
+.dbot-tab-content {
+  display: none;
+  padding: 1rem;
+}
+.dbot-tab-content.active {
+  display: block;
+}
+
+.dbot-summary {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+.dbot-summary-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.5rem 0;
+  border-bottom: 1px solid var(--border2);
+}
+.dbot-summary-row:last-child {
+  border-bottom: none;
+}
+.dbot-summary-label {
+  font-size: 0.75rem;
+  color: var(--muted);
+  font-family: var(--font-mono);
+}
+.dbot-summary-value {
+  font-family: var(--font-mono);
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: var(--text);
+}
+.dbot-summary-value.green { color: var(--green); }
+.dbot-summary-value.red { color: var(--red); }
+
+.btn-reset {
+  background: var(--card);
+  border: 1px solid var(--border2);
+  color: var(--text2);
+  font-family: var(--font-head);
+  font-weight: 600;
+  font-size: 0.85rem;
+  padding: 0.6rem;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.15s;
+  letter-spacing: 1px;
+}
+.btn-reset:hover {
+  background: var(--red-dim);
+  border-color: var(--red);
+  color: var(--red);
+}
+
+/* Updated Run Bar */
+.run-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 0.8rem 1.2rem;
+  margin-top: 1rem;
+}
+.run-bar-left {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+.run-bar-center {
+  flex: 1;
+  text-align: center;
+}
+.run-bar-right {
+  display: flex;
+  align-items: center;
+}
+.run-bar-status {
+  font-family: var(--font-mono);
+  font-size: 0.8rem;
+  color: var(--muted);
+}
+.run-bar-status.running {
+  color: var(--green);
+}
+.run-bar-status.stopped {
+  color: var(--red);
+}
+
+/* ═══════ DBTRADERS-STYLE TOPBAR ═══════ */
+.topbar {
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+  padding: 0.5rem 1.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  position: sticky;
+  top: 0;
+  z-index: 50;
+}
+
+/* Balance dropdown white theme fixes */
+.acc-dropdown {
+  display: none;
+  position: absolute;
+  right: 0;
+  top: calc(100% + 8px);
+  background: #ffffff;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  min-width: 320px;
+  z-index: 999;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.15);
+  overflow: hidden;
+}
+.acc-dropdown.show {
+  display: block;
+}
+
+/* Light theme overrides for sidebar */
+.sidebar {
+  width: 220px;
+  background: #ffffff;
+  border-right: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  padding: 1rem 0;
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 100vh;
+  z-index: 100;
+  overflow-y: auto;
+}
+.sidebar-logo {
+  padding: 0.5rem 1.2rem 1.2rem;
+  border-bottom: 1px solid var(--border);
+  margin-bottom: 0.5rem;
+}
+.nav-item:hover {
+  color: var(--text);
+  background: var(--green-dim);
+}
+.nav-item.active {
+  color: var(--green);
+  background: var(--green-dim);
+  border-left-color: var(--green);
+}
+
+/* Light theme card backgrounds */
+.trade-panel {
+  background: #ffffff;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 1.2rem;
+}
+
+/* ═══════ END DBTRADERS STYLES ═══════ */
+
 /* Responsive */
 @media (max-width: 1200px) {
   .trader-layout, .bot-editor-layout { grid-template-columns: 1fr; }
@@ -956,7 +1148,7 @@ a { color: var(--green); text-decoration: none; }
                 <div style="overflow-x:auto;">
                   <table class="bot-list-table" id="bot-list-table">
                     <thead>
-                      <tr><th>Bot Name</th><th>Last Modified</th><th>Status</th><th>Actions</th></tr>
+                      <tr><th>Bot name</th><th>Last modified</th><th>Status</th><th>Actions</th></tr>
                     </thead>
                     <tbody id="bot-list-tbody"></tbody>
                   </table>
@@ -970,32 +1162,88 @@ a { color: var(--green); text-decoration: none; }
                   <button class="btn-outline" style="padding:0.6rem 1.2rem;" onclick="downloadCurrentBot()"><i class="fas fa-download"></i> Download</button>
                 </div>
               </div>
-              <div class="run-bar" id="run-bar">
-                <div class="run-bar-left">
-                  <span class="run-bar-status stopped" id="run-bar-status"><i class="fas fa-stop-circle"></i> Bot is not running</span>
+            </div>
+
+            <!-- RIGHT PANEL: Summary / Transactions / Journal -->
+            <div class="bot-editor-right">
+              <div class="trade-panel" style="padding:0;overflow:hidden;">
+                <!-- Tabs Header -->
+                <div class="dbot-tabs">
+                  <div class="dbot-tab active" onclick="switchBotTab('summary', this)">Summary</div>
+                  <div class="dbot-tab" onclick="switchBotTab('transactions', this)">Transactions</div>
+                  <div class="dbot-tab" onclick="switchBotTab('journal', this)">Journal</div>
                 </div>
-                <div>
-                  <button class="btn-run-big" id="btn-run-bot" onclick="runBot()"><i class="fas fa-play"></i> Run</button>
-                  <button class="btn-stop-big" id="btn-stop-bot" onclick="stopBot()" style="display:none;"><i class="fas fa-stop"></i> Stop</button>
+
+                <!-- Summary Tab -->
+                <div class="dbot-tab-content active" id="bot-tab-summary">
+                  <div class="dbot-summary">
+                    <div class="dbot-summary-row">
+                      <span class="dbot-summary-label">Total stake</span>
+                      <span class="dbot-summary-value" id="summary-total-stake">0.00 USD</span>
+                    </div>
+                    <div class="dbot-summary-row">
+                      <span class="dbot-summary-label">Total payout</span>
+                      <span class="dbot-summary-value" id="summary-total-payout">0.00 USD</span>
+                    </div>
+                    <div class="dbot-summary-row">
+                      <span class="dbot-summary-label">No. of runs</span>
+                      <span class="dbot-summary-value" id="summary-runs">0</span>
+                    </div>
+                    <div class="dbot-summary-row">
+                      <span class="dbot-summary-label">Contracts lost</span>
+                      <span class="dbot-summary-value red" id="summary-lost">0</span>
+                    </div>
+                    <div class="dbot-summary-row">
+                      <span class="dbot-summary-label">Contracts won</span>
+                      <span class="dbot-summary-value green" id="summary-won">0</span>
+                    </div>
+                    <div class="dbot-summary-row">
+                      <span class="dbot-summary-label">Total profit/loss</span>
+                      <span class="dbot-summary-value" id="summary-pnl">0.00 USD</span>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Transactions Tab -->
+                <div class="dbot-tab-content" id="bot-tab-transactions">
+                  <div class="bot-log-panel" id="bot-transactions-panel" style="max-height:250px;">
+                    <div class="bot-log-entry"><span class="log-time">--:--:--</span> <span class="log-info">When you are ready to trade, hit Run. You will be able to track your bot's performance here.</span></div>
+                  </div>
+                </div>
+
+                <!-- Journal Tab -->
+                <div class="dbot-tab-content" id="bot-tab-journal">
+                  <div class="journal-panel" id="journal-panel" style="max-height:250px;">
+                    <div class="journal-entry">
+                      <span class="je-time">--:--:--</span>
+                      <span class="je-msg">Welcome to KimHub Bot Editor. Load or create a bot to begin.</span>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Reset Button -->
+                <div style="padding:0.8rem 1rem;border-top:1px solid var(--border);background:var(--card2);">
+                  <button class="btn-reset" onclick="resetBotStats()" style="width:100%;">
+                    <i class="fas fa-undo"></i> Reset
+                  </button>
                 </div>
               </div>
             </div>
-            <div class="bot-editor-right">
-              <div class="trade-panel">
-                <div class="trade-panel-title"><i class="fas fa-terminal"></i> Bot Log</div>
-                <div class="bot-log-panel" id="bot-log-panel">
-                  <div class="bot-log-entry"><span class="log-time">--:--:--</span> <span class="log-info">Welcome to KimHub Bot Editor. Load or create a bot to begin.</span></div>
-                </div>
-              </div>
-              <div class="trade-panel">
-                <div class="trade-panel-title"><i class="fas fa-book"></i> Journal</div>
-                <div class="journal-panel" id="journal-panel">
-                  <div class="journal-entry">
-                    <span class="je-time">--:--:--</span>
-                    <span class="je-msg">Your messages will appear here when you run bots or place trades.</span>
-                  </div>
-                </div>
-              </div>
+          </div>
+
+          <!-- RUN BAR -->
+          <div class="run-bar" id="run-bar">
+            <div class="run-bar-left">
+              <button class="btn-run-big" id="btn-run-bot" onclick="runBot()"><i class="fas fa-play"></i> Run</button>
+              <button class="btn-stop-big" id="btn-stop-bot" onclick="stopBot()" style="display:none;"><i class="fas fa-stop"></i> Stop</button>
+            </div>
+            <div class="run-bar-center">
+              <span class="run-bar-status stopped" id="run-bar-status">Bot is not running</span>
+            </div>
+            <div class="run-bar-right">
+              <span style="font-family:var(--font-mono);font-size:0.75rem;color:var(--muted);">
+                <i class="fas fa-clock"></i> <span id="bot-timer">00:00:00</span> GMT
+              </span>
             </div>
           </div>
         </div>
@@ -1082,7 +1330,7 @@ a { color: var(--green); text-decoration: none; }
 // ═══════════════════════════════════════════════════════
 // CONFIG & MARKET DATA
 // ═══════════════════════════════════════════════════════
-const APP_ID = '33elQKjIy2RDqA1aSDLeh'; 
+const APP_ID = '1089'; // Replace with your Deriv App ID
 const WS_URL = 'wss://ws.binaryws.com/websockets/v3?app_id=' + APP_ID;
 
 // All markets organized by category
@@ -1227,6 +1475,16 @@ const loadTimer = setInterval(() => {
   }
 }, 55);
 
+// Fallback: force hide loader after 6 seconds even if JS errors
+setTimeout(() => {
+  const loader = document.getElementById('loader');
+  if (loader && loader.style.display !== 'none') {
+    loader.style.opacity = '0';
+    setTimeout(() => { loader.style.display = 'none'; }, 600);
+    showLanding();
+  }
+}, 6000);
+
 function initApp() {
   const loader = document.getElementById('loader');
   loader.style.opacity = '0';
@@ -1343,14 +1601,43 @@ function authWithToken(token) {
       document.getElementById('pat-modal').style.display = 'none';
       showDashboard();
       authWS.send(JSON.stringify({ account_list: 1 }));
-      // Subscribe to balance updates
+      // Subscribe to balance updates for ALL accounts
       authWS.send(JSON.stringify({ balance: 1, subscribe: 1 }));
+      authWS.send(JSON.stringify({ statement: 1, description: 1, limit: 10 }));
     } else if (d.account_list) {
-      allAccounts = d.account_list;
-      buildAccList(d.account_list);
+      allAccounts = d.account_list.map(acc => ({
+        loginid: acc.loginid,
+        balance: acc.balance,
+        currency: acc.currency,
+        is_virtual: acc.is_virtual
+      }));
+      buildAccList(allAccounts);
     } else if (d.balance) {
-      accountData.balance = d.balance.balance;
+      // Update the specific account balance
+      const acc = allAccounts.find(a => a.loginid === d.balance.loginid);
+      if (acc) {
+        acc.balance = d.balance.balance;
+        if (acc.loginid === accountData.loginid) {
+          accountData.balance = d.balance.balance;
+        }
+      }
       updateAccountUI();
+      buildAccList(allAccounts);
+    } else if (d.statement) {
+      // Update trade history from Deriv statement
+      if (d.statement.transactions) {
+        tradeHistory = d.statement.transactions.map(t => ({
+          time: new Date(t.transaction_time * 1000).toLocaleTimeString(),
+          sym: t.shortcode || '—',
+          type: t.action_type || '—',
+          stake: Math.abs(t.amount).toFixed(2),
+          duration: '—',
+          payout: t.payout || '—',
+          profit: t.amount.toFixed(2),
+          status: t.amount >= 0 ? 'won' : 'lost'
+        }));
+        renderHistory();
+      }
     } else if (d.error) {
       document.getElementById('pat-modal').style.display = 'flex';
       document.getElementById('pat-input').style.border = '1px solid #ff5252';
@@ -1367,15 +1654,6 @@ function showDashboard() {
   document.getElementById('ticker').style.display = 'block';
   document.getElementById('landing').style.display = 'none';
   document.getElementById('dashboard').style.display = 'block';
-  // Build demo accounts list for display
-  if (!isLoggedIn) {
-    allAccounts = [
-      { loginid: 'CR111111', balance: 0.05, currency: 'USD', is_virtual: false },
-      { loginid: 'CR222222', balance: 0.00, currency: 'tUSDT', is_virtual: false },
-      { loginid: 'VRTC111111', balance: 34805.32, currency: 'USD', is_virtual: true }
-    ];
-    accountData = allAccounts[0];
-  }
   updateAccountUI();
   buildBots();
   buildCopyTraders();
@@ -2191,10 +2469,10 @@ function runBot() {
   document.getElementById('btn-run-bot').style.display = 'none';
   document.getElementById('btn-stop-bot').style.display = 'inline-flex';
   document.getElementById('run-bar-status').className = 'run-bar-status running';
-  document.getElementById('run-bar-status').innerHTML = '<i class="fas fa-play-circle"></i> Bot is running...';
+  document.getElementById('run-bar-status').textContent = 'Bot is running...';
 
-  addBotLog('Bot "' + currentBot.name + '" started', 'success');
   addJournalEntry('Bot started: ' + currentBot.name, 'success');
+  addBotTransaction('Bot "' + currentBot.name + '" started', 'info');
 
   // Simulate bot trades every 5 seconds
   botInterval = setInterval(() => {
@@ -2202,9 +2480,20 @@ function runBot() {
     const stake = (1.00 + Math.random() * 2).toFixed(2);
     const isWin = Math.random() > 0.45;
     const profit = isWin ? (stake * 0.85).toFixed(2) : (-stake).toFixed(2);
-    addBotLog('Trade: ' + currentBot.name + ' | Stake: ' + stake + ' USD | Result: ' + (isWin ? 'WIN +' + profit : 'LOSS ' + profit), isWin ? 'success' : 'error');
 
-    // Update balance simulation
+    addBotTransaction(
+      'Trade: ' + currentBot.name + ' | Stake: ' + stake + ' USD | Result: ' + (isWin ? 'WIN +' + profit : 'LOSS ' + profit),
+      isWin ? 'win' : 'loss',
+      stake,
+      profit
+    );
+
+    addJournalEntry(
+      'Trade: ' + currentBot.name + ' ' + (isWin ? 'WIN +' : 'LOSS ') + profit + ' USD',
+      isWin ? 'success' : 'error'
+    );
+
+    // Update balance
     if (isWin) {
       accountData.balance = parseFloat(accountData.balance) + parseFloat(profit);
     } else {
@@ -2228,9 +2517,9 @@ function stopBot() {
   document.getElementById('btn-run-bot').style.display = 'inline-flex';
   document.getElementById('btn-stop-bot').style.display = 'none';
   document.getElementById('run-bar-status').className = 'run-bar-status stopped';
-  document.getElementById('run-bar-status').innerHTML = '<i class="fas fa-stop-circle"></i> Bot is not running';
+  document.getElementById('run-bar-status').textContent = 'Bot is not running';
 
-  addBotLog('Bot "' + (currentBot ? currentBot.name : 'Unknown') + '" stopped', 'warn');
+  addBotTransaction('Bot "' + (currentBot ? currentBot.name : 'Unknown') + '" stopped', 'info');
   addJournalEntry('Bot stopped: ' + (currentBot ? currentBot.name : ''), 'warn');
   showNotif('Bot stopped.');
 }
@@ -2243,6 +2532,73 @@ function runBotByIndex(index) {
 function stopBotByIndex(index) {
   currentBot = userBots[index];
   stopBot();
+}
+
+let botStats = {
+  totalStake: 0,
+  totalPayout: 0,
+  runs: 0,
+  contractsLost: 0,
+  contractsWon: 0,
+  totalPnL: 0,
+  transactions: []
+};
+
+function switchBotTab(tabName, el) {
+  document.querySelectorAll('.dbot-tab').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.dbot-tab-content').forEach(c => c.classList.remove('active'));
+  el.classList.add('active');
+  document.getElementById('bot-tab-' + tabName).classList.add('active');
+}
+
+function resetBotStats() {
+  if (!confirm('Reset all bot statistics? This will clear transactions and journal entries.')) return;
+  botStats = {
+    totalStake: 0,
+    totalPayout: 0,
+    runs: 0,
+    contractsLost: 0,
+    contractsWon: 0,
+    totalPnL: 0,
+    transactions: []
+  };
+  updateBotSummary();
+  document.getElementById('bot-transactions-panel').innerHTML = '<div class="bot-log-entry"><span class="log-time">--:--:--</span> <span class="log-info">Statistics reset. Ready to trade.</span></div>';
+  addJournalEntry('Bot statistics reset.', 'warn');
+  showNotif('Bot statistics reset successfully');
+}
+
+function updateBotSummary() {
+  document.getElementById('summary-total-stake').textContent = botStats.totalStake.toFixed(2) + ' ' + (accountData.currency || 'USD');
+  document.getElementById('summary-total-payout').textContent = botStats.totalPayout.toFixed(2) + ' ' + (accountData.currency || 'USD');
+  document.getElementById('summary-runs').textContent = botStats.runs;
+  document.getElementById('summary-lost').textContent = botStats.contractsLost;
+  document.getElementById('summary-won').textContent = botStats.contractsWon;
+  const pnlEl = document.getElementById('summary-pnl');
+  pnlEl.textContent = (botStats.totalPnL >= 0 ? '+' : '') + botStats.totalPnL.toFixed(2) + ' ' + (accountData.currency || 'USD');
+  pnlEl.className = 'dbot-summary-value ' + (botStats.totalPnL >= 0 ? 'green' : 'red');
+}
+
+function addBotTransaction(msg, type, stake, profit) {
+  const time = new Date().toLocaleTimeString();
+  const panel = document.getElementById('bot-transactions-panel');
+  const entry = document.createElement('div');
+  entry.className = 'bot-log-entry';
+  const typeClass = type === 'win' ? 'log-success' : type === 'loss' ? 'log-error' : 'log-info';
+  entry.innerHTML = `<span class="log-time">${time}</span> <span class="${typeClass}">${msg}</span>`;
+  panel.insertBefore(entry, panel.firstChild);
+  while (panel.children.length > 50) panel.removeChild(panel.lastChild);
+
+  // Update stats
+  if (stake) botStats.totalStake += parseFloat(stake);
+  if (profit) {
+    botStats.totalPnL += parseFloat(profit);
+    botStats.totalPayout += parseFloat(profit) + parseFloat(stake || 0);
+    botStats.runs++;
+    if (parseFloat(profit) >= 0) botStats.contractsWon++;
+    else botStats.contractsLost++;
+  }
+  updateBotSummary();
 }
 
 function addBotLog(msg, type) {
