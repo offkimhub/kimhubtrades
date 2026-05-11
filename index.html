@@ -669,7 +669,8 @@ function updateAccountUI() {
   const bal = parseFloat(accountData.balance || 10000).toFixed(2);
   document.getElementById('top-balance').textContent = `${bal} ${accountData.currency || 'USD'}`;
   document.getElementById('bal-display').textContent = bal;
-  document.getElementById('bal-currency').textContent = accountData.currency || 'USD';buildAccList([{loginid: accountData.loginid, balance: accountData.balance, currency: accountData.currency || 'USD', is_virtual: accountData.is_virtual}]);
+  document.getElementById('bal-currency').textContent = accountData.currency || 'USD';
+  buildAccList([{loginid: accountData.loginid, balance: accountData.balance, currency: accountData.currency || 'USD', is_virtual: accountData.is_virtual}]);
 }
 
 // ── WEBSOCKET ──
