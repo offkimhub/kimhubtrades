@@ -631,7 +631,7 @@ function authWithToken(token) {
       };
       isLoggedIn = true;
       ws2.send(JSON.stringify({ account_list: 1 }));
-      ws2.close();
+      
       document.getElementById('pat-modal').style.display = 'none';
       showDashboard();
       if (d.account_list) { buildAccList(d.account_list); }
