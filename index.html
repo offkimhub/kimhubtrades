@@ -630,14 +630,13 @@ function authWithToken(token) {
         is_virtual: d.authorize.is_virtual
       };
       isLoggedIn = true;
-      ws2.send(JSON.stringify({ account_list: 1 }));
-      
       document.getElementById('pat-modal').style.display = 'none';
       showDashboard();
-      } else if (d.account_list) { buildAccList(d.account_list); ws2.close();
-      
-    } } else if (d.error) {
-      
+      ws2.send(JSON.stringify({ account_list: 1 }));
+    } else if (d.account_list) {
+      buildAccList(d.account_list);
+      ws2.close();
+    } else if (d.error) {
       document.getElementById('pat-modal').style.display = 'flex';
       document.getElementById('pat-input').style.border = '1px solid #ff5252';
       showNotif('Invalid token. Please check and try again.');
@@ -647,6 +646,7 @@ function authWithToken(token) {
     document.getElementById('pat-modal').style.display = 'flex';
     showNotif('Connection error. Please try again.');
   };
+}
 }
 
 // ── DASHBOARD ──
