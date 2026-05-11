@@ -1,0 +1,390 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KimHub Traders | AI Dashboard</title>
+    <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-dark: #0f172a;
+            --bg-panel: #1e293b;
+            --bg-input: #334155;
+            --primary: #6366f1;
+            --primary-hover: #4f46e5;
+            --success: #10b981;
+            --danger: #ef4444;
+            --text: #f8fafc;
+            --text-muted: #94a3b8;
+            --border: #334155;
+            --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.5);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Rajdhani', sans-serif; }
+
+        body {
+            background-color: var(--bg-dark);
+            color: var(--text);
+            height: 100vh;
+            overflow: hidden;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .hidden { display: none !important; }
+
+        /* --- Buttons --- */
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-size: 1rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        .btn-primary { background: var(--primary); color: white; }
+        .btn-primary:hover { background: var(--primary-hover); transform: translateY(-2px); }
+        .btn-success { background: var(--success); color: white; width: 100%; }
+        .btn-danger { background: var(--danger); color: white; width: 100%; }
+
+        /* --- Login Screen --- */
+        #login-screen {
+            width: 100%;
+            max-width: 400px;
+            padding: 30px;
+            background: var(--bg-panel);
+            border-radius: 16px;
+            box-shadow: var(--shadow);
+            border: 1px solid var(--border);
+            text-align: center;
+        }
+        .logo { font-size: 2rem; font-weight: 700; color: var(--primary); margin-bottom: 20px; }
+        .input-group { margin-bottom: 20px; text-align: left; }
+        .input-group label { display: block; margin-bottom: 8px; color: var(--text-muted); font-size: 0.9rem; }
+        .input-group input {
+            width: 100%;
+            padding: 12px;
+            background: var(--bg-input);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            color: white;
+            font-size: 1rem;
+            outline: none;
+        }
+        .input-group input:focus { border-color: var(--primary); }
+
+        /* --- Dashboard Layout --- */
+        #dashboard {
+            width: 100%;
+            height: 100%;
+            display: grid;
+            grid-template-rows: 60px 1fr;
+            grid-template-columns: 250px 1fr 300px;
+            gap: 1px;
+            background: var(--border);
+        }
+
+        /* Header */
+        .header {
+            grid-column: 1 / -1;
+            background: var(--bg-panel);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 20px;
+        }
+        .user-info { display: flex; align-items: center; gap: 10px; }
+        .status-dot { width: 10px; height: 10px; background: var(--success); border-radius: 50%; }
+
+        /* Sidebar */
+        .sidebar {
+            background: var(--bg-panel);
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            overflow-y: auto;
+        }
+        .market-item {
+            padding: 10px;
+            border-radius: 8px;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            transition: background 0.2s;
+        }
+        .market-item:hover, .market-item.active { background: var(--bg-input); }
+        .market-item .price { color: var(--success); }
+        .market-item.down .price { color: var(--danger); }
+
+        /* Main Chart Area */
+        .main-view {
+            background: var(--bg-dark);
+            display: flex;
+            flex-direction: column;
+            position: relative;
+        }
+        .chart-placeholder {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: radial-gradient(circle at center, #1e293b 0%, #0f172a 100%);
+            position: relative;
+            overflow: hidden;
+        }
+        .chart-line {
+            width: 80%;
+            height: 2px;
+            background: linear-gradient(90deg, var(--primary), var(--success));
+            position: relative;
+        }
+        .chart-line::after {
+            content: '';
+            position: absolute;
+            right: 0;
+            top: -4px;
+            width: 10px;
+            height: 10px;
+            background: var(--primary);
+            border-radius: 50%;
+            box-shadow: 0 0 10px var(--primary);
+        }
+        .price-display {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            font-size: 2.5rem;
+            font-weight: 700;
+        }
+
+        /* Trade Controls */
+        .trade-controls {
+            padding: 20px;
+            background: var(--bg-panel);
+            border-top: 1px solid var(--border);
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+        .trade-input {
+            width: 100%;
+            padding: 10px;
+            background: var(--bg-input);
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            color: white;
+            text-align: center;
+            margin-bottom: 10px;
+        }
+
+        /* AI Bot Panel */
+        .ai-panel {
+            background: var(--bg-panel);
+            display: flex;
+            flex-direction: column;
+            border-left: 1px solid var(--border);
+        }
+        .chat-header {
+            padding: 15px;
+            border-bottom: 1px solid var(--border);
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .chat-messages {
+            flex: 1;
+            padding: 15px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        .msg {
+            max-width: 85%;
+            padding: 10px 14px;
+            border-radius: 12px;
+            font-size: 0.9rem;
+            line-height: 1.4;
+        }
+        .msg.bot { background: var(--bg-input); align-self: flex-start; border-bottom-left-radius: 2px; }
+        .msg.user { background: var(--primary); align-self: flex-end; border-bottom-right-radius: 2px; }
+        
+        .chat-input-area {
+            padding: 15px;
+            border-top: 1px solid var(--border);
+            display: flex;
+            gap: 10px;
+        }
+        .chat-input {
+            flex: 1;
+            padding: 10px;
+            background: var(--bg-input);
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            color: white;
+            outline: none;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 1024px) {
+            #dashboard {
+                grid-template-columns: 1fr;
+                grid-template-rows: 60px 1fr 250px 300px;
+            }
+            .sidebar { grid-row: 2; grid-column: 1; flex-direction: row; overflow-x: auto; }
+            .ai-panel { grid-row: 4; grid-column: 1; border-left: none; border-top: 1px solid var(--border); }
+            .trade-controls { grid-row: 3; grid-column: 1; grid-template-columns: 1fr 1fr; }
+            .main-view { grid-row: 2; grid-column: 1; }
+        }
+
+        @media (max-width: 600px) {
+            .trade-controls { grid-template-columns: 1fr; }
+            .market-item { min-width: 120px; }
+            .price-display { font-size: 1.8rem; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- LOGIN SCREEN -->
+    <div id="login-screen">
+        <div class="logo">KimHub Traders</div>
+        <p style="color: var(--text-muted); margin-bottom: 20px;">Enter your API Token to access the terminal</p>
+        <div class="input-group">
+            <label>API Token</label>
+            <input type="password" id="api-token" placeholder="••••••••••••••••">
+        </div>
+        <button class="btn btn-primary" style="width: 100%;" onclick="handleLogin()">Secure Login</button>
+    </div>
+
+    <!-- DASHBOARD -->
+    <div id="dashboard" class="hidden">
+        <!-- Header -->
+        <div class="header">
+            <div class="logo" style="font-size: 1.5rem; margin:0;">KimHub</div>
+            <div class="user-info">
+                <div class="status-dot"></div>
+                <span id="user-display">Trader</span>
+                <button class="btn" style="padding: 5px 10px; font-size: 0.8rem; background: var(--danger);" onclick="logout()">Exit</button>
+            </div>
+        </div>
+
+        <!-- Sidebar (Markets) -->
+        <div class="sidebar">
+            <div class="market-item active" onclick="selectMarket('BTC')">
+                <span>BTC/USD</span>
+                <span class="price" id="price-btc">$64,230</span>
+            </div>
+            <div class="market-item down" onclick="selectMarket('ETH')">
+                <span>ETH/USD</span>
+                <span class="price" id="price-eth">$3,450</span>
+            </div>
+            <div class="market-item" onclick="selectMarket('SOL')">
+                <span>SOL/USD</span>
+                <span class="price" id="price-sol">$145</span>
+            </div>
+            <div class="market-item down" onclick="selectMarket('XRP')">
+                <span>XRP/USD</span>
+                <span class="price" id="price-xrp">$0.62</span>
+            </div>
+        </div>
+
+        <!-- Main View -->
+        <div class="main-view">
+            <div class="price-display" id="main-price">$64,230.00</div>
+            <div class="chart-placeholder">
+                <div class="chart-line"></div>
+                <div style="position: absolute; bottom: 20px; color: var(--text-muted);">Live Chart Simulation</div>
+            </div>
+            
+            <div class="trade-controls">
+                <div>
+                    <input type="number" class="trade-input" placeholder="Amount (USD)">
+                    <button class="btn btn-success" onclick="executeTrade('buy')">Buy / Long</button>
+                </div>
+                <div>
+                    <input type="number" class="trade-input" placeholder="Amount (USD)">
+                    <button class="btn btn-danger" onclick="executeTrade('sell')">Sell / Short</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- AI Bot Panel -->
+        <div class="ai-panel">
+            <div class="chat-header">
+                <span>🤖</span> KimHub AI Assistant
+            </div>
+            <div class="chat-messages" id="chat-box">
+                <div class="msg bot">Hello! I am your trading AI. Ask me about "BTC price", "market trends", or "analyze".</div>
+            </div>
+            <div class="chat-input-area">
+                <input type="text" class="chat-input" id="chat-input" placeholder="Ask AI..." onkeypress="handleEnter(event)">
+                <button class="btn btn-primary" style="padding: 10px;" onclick="sendChat()">➤</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // --- State Management ---
+        let currentMarket = 'BTC';
+        const markets = {
+            'BTC': { price: 64230, name: 'Bitcoin' },
+            'ETH': { price: 3450, name: 'Ethereum' },
+            'SOL': { price: 145, name: 'Solana' },
+            'XRP': { price: 0.62, name: 'Ripple' }
+        };
+
+        // --- Login Logic ---
+        function handleLogin() {
+            const token = document.getElementById('api-token').value;
+            if(token.length < 4) {
+                alert("Please enter a valid API token.");
+                return;
+            }
+            document.getElementById('login-screen').classList.add('hidden');
+            document.getElementById('dashboard').classList.remove('hidden');
+            // Simulate live price updates
+            setInterval(() => {
+                const randomChange = (Math.random() - 0.5) * 10;
+                markets[currentMarket].price += randomChange;
+                updatePriceDisplay();
+            }, 2000);
+        }
+
+        function logout() {
+            document.getElementById('dashboard').classList.add('hidden');
+            document.getElementById('login-screen').classList.remove('hidden');
+            document.getElementById('api-token').value = '';
+        }
+
+        // --- Dashboard Logic ---
+        function selectMarket(symbol) {
+            currentMarket = symbol;
+            
+            document.querySelectorAll('.market-item').forEach(el => el.classList.remove('active', 'down'));
+            const activeEl = event.currentTarget;
+            activeEl.classList.add('active');
+            if(symbol === 'ETH' || symbol === 'XRP') activeEl.classList.add('down');
+
+            updatePriceDisplay();
+            addBotMessage(`Switched to ${symbol} chart. Analyzing market trends...`);
+        }
+
+        function updatePriceDisplay() {
+            const price = markets[currentMarket].price;
+            document.getElementById('main-price').innerText = `$${price.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}`;
+            
+            // Update sidebar prices
+            for (const [key, value] of Object.entries(markets)) {
+                const el = document.getElementById(`price-${key.toLowerCase()}`);
+                if(el) el.innerText = `$${value.price.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}`;
+            }
+        }
+
+        function executeTrade
