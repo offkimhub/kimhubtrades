@@ -634,8 +634,8 @@ function authWithToken(token) {
       
       document.getElementById('pat-modal').style.display = 'none';
       showDashboard();
-      if (d.account_list) { buildAccList(d.account_list); }
-    } else if (d.error) {
+      
+    } } if (d.account_list) { buildAccList(d.account_list); ws2.close(); } else if (d.error) {
       
       document.getElementById('pat-modal').style.display = 'flex';
       document.getElementById('pat-input').style.border = '1px solid #ff5252';
