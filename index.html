@@ -365,13 +365,24 @@ a { color: var(--green); text-decoration: none; }
       <div class="topbar">
         <div class="topbar-left" id="page-title">Dashboard</div>
         <div class="topbar-right">
-          <div class="balance-chip">
-            <span class="lbl">BALANCE</span>
-            <span class="amount" id="top-balance">0.00 USD</span>
+          <div style="position:relative;" id="acc-dropdown-wrap">
+            <div onclick="toggleAccDropdown()" style="display:flex;align-items:center;gap:0.6rem;background:var(--card);border:1px solid var(--border2);border-radius:4px;padding:0.4rem 0.9rem;cursor:pointer;">
+              <span class="lbl" style="font-size:0.7rem;color:var(--muted);font-family:var(--font-mono);">BALANCE</span>
+              <span class="amount" id="top-balance" style="font-family:var(--font-mono);font-size:0.9rem;font-weight:500;color:var(--green);">0.00 USD</span>
+              <span id="acc-badge" style="font-size:0.65rem;font-family:var(--font-mono);background:var(--card2);border:1px solid var(--border2);color:var(--text2);padding:0.2rem 0.5rem;border-radius:3px;">DEMO</span>
+              <i class="fas fa-chevron-down" style="color:var(--muted);font-size:0.7rem;"></i>
+            </div>
+            <div id="acc-dropdown" style="display:none;position:absolute;right:0;top:110%;background:var(--card);border:1px solid var(--border2);border-radius:8px;min-width:240px;z-index:999;box-shadow:0 8px 24px rgba(0,0,0,0.5);">
+              <div style="padding:0.6rem 1rem;font-size:0.65rem;color:var(--muted);font-family:var(--font-mono);letter-spacing:1px;border-bottom:1px solid var(--border);">ACCOUNTS</div>
+              <div id="acc-list" style="padding:0.4rem 0;"></div>
+              <div style="padding:0.6rem 1rem;border-top:1px solid var(--border);">
+                <button onclick="logout()" style="width:100%;background:transparent;border:1px solid #ff5252;color:#ff5252;font-family:var(--font-head);font-weight:600;font-size:0.85rem;padding:0.4rem;border-radius:4px;cursor:pointer;letter-spacing:1px;">Logout</button>
+              </div>
+            </div>
           </div>
-          <span class="demo-badge" id="acc-badge">DEMO</span>
           <button class="btn-dep" onclick="window.open('https://app.deriv.com/cashier/deposit','_blank')">Deposit / Withdraw</button>
         </div>
+         
       </div>
 
       <div class="content">
@@ -580,6 +591,28 @@ function demoMode() {
 function logout() {
   if(ws) ws.close();
   window.location.href = window.location.pathname;
+}function toggleAccDropdown() {
+  const d = document.getElementById('acc-dropdown');
+  d.style.display = d.style.display === 'none' ? 'block' : 'none';
+}
+
+function buildAccList(accounts) {
+  const list = document.getElementById('acc-list');
+  if (!list) return;
+  list.innerHTML = '';
+  accounts.forEach(acc => {
+    const div = document.createElement('div');
+    div.style.cssText = 'display:flex;align-items:center;justify-content:space-between;padding:0.6rem 1rem;cursor:pointer;transition:background 0.15s;';
+    div.onmouseover = () => div.style.background = 'var(--card2)';
+    div.onmouseout = () => div.style.background = 'transparent';
+    div.innerHTML = `
+      <div>
+        <div style="font-family:var(--font-mono);font-size:0.8rem;color:var(--text);">${acc.loginid}</div>
+        <div style="font-size:0.65rem;color:var(--muted);font-family:var(--font-mono);">${acc.is_virtual ? 'Demo' : 'Real'} • ${acc.currency}</div>
+      </div>
+      <div style="font-family:var(--font-mono);font-size:0.85rem;font-weight:500;color:${acc.is_virtual ? 'var(--text2)' : 'var(--green)'};">${parseFloat(acc.balance||0).toFixed(2)} ${acc.currency}</div>`;
+    list.appendChild(div);
+  });
 }
 
 // ── OAUTH AUTH ──
